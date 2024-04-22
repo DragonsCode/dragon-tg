@@ -41,3 +41,6 @@ class Message(Parent):
 
     def __repr__(self):
         return f"Message(message_id={self.message_id}, date={self.date}, text={self.text}, from_user={self.from_user}, chat={self.chat})"
+    
+    def __str__(self):
+        return f"Message(message_id={self.message_id}, date={self.date}, text={self.text}, from_user={self.from_user}, chat={self.chat})"

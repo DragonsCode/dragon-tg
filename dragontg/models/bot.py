@@ -37,7 +37,9 @@ class Bot(Parent):
         res = await send_message(self.token, chat_id, text, reply_to_message_id)
         if not res:
             return
-        return Message(**res)
+        res['from_user'] = res['from']
+        del res['from']
+        return Message.from_kwargs(**res)
 
     async def long_polling(self, skip_updates: bool = False) -> None:
         bot = await self.get_me()
@@ -56,11 +58,10 @@ class Bot(Parent):
             if not j:
                 continue
             for r in j:
-                print(f"Update {r['update_id']} is handled!")
                 from_user = r['message']['from']
                 r['message']['from_user'] = from_user
                 del r['message']['from']
                 m = Message.from_kwargs(**r['message'])
                 if m.text:
                     await self.dispatcher.handle_message(r, m, bot)
-                offset = r['update_id'] + 1
+                self.offset = r['update_id'] + 1

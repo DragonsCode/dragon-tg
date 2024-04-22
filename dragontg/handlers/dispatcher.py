@@ -22,12 +22,27 @@ class Dispatcher(Parent):
         for h in self.message_handlers:
             if not h[1]:
                 await h[0](update, message, bot)
+                print(f"Update {update['update_id']} is handled!")
                 return
             else:
                 dispatch = True
+                print(h[1].items())
+                # print(update)
                 for k, v in h[1].items():
-                    if k in update and update[k] != v:
+                    print(k, v)
+                    if '.' in k:
+                        inner_k = k.split('.')
+                        print(inner_k)
+                        if inner_k[0] in update['message']:
+                            if update['message'][inner_k[0]][inner_k[1]] != v:
+                                dispatch = False
+                                break
+                    if k in update['message'] and update['message'][k] != v:
+                        print(f"Update {update['update_id']} is not handled, because {k} != {v}!")
                         dispatch = False
-                        return
-                await h[0](update, message, bot)
-                return
+                        break
+                if dispatch:
+                    await h[0](update, message, bot)
+                    print(f"Update {update['update_id']} is handled!")
+                    return
+        print(f"Update {update['update_id']} is not handled!")
