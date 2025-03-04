@@ -1,4 +1,4 @@
-from __future__ import annotations
+from typing import TYPE_CHECKING
 from dragontg.models.chat import Chat
 from dragontg.models.user import User
 from dragontg.models.parent import Parent
@@ -8,12 +8,15 @@ from dragontg.methods.send_message import send_message
 
 from dataclasses import dataclass
 
+if TYPE_CHECKING:
+    from dragontg.models.bot import Bot  # Only for type checkers
+
 @dataclass
 class Message(Parent):
     message_id: int
     date: int
     text: str
-    bot: Bot = None
+    bot: 'Bot' = None
     _from_user: User = None
     _chat: Chat = None
 
