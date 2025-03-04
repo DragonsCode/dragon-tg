@@ -26,9 +26,18 @@ class Dispatcher(Parent):
                 logging.error(f'Error in message_handler: {e}', exc_info=True)
         return wrapper
     
+    def get_nested_value(self, d, keys):
+        """Retrieve a nested value from a dictionary using a list of keys."""
+        for key in keys:
+            if isinstance(d, dict) and key in d:
+                d = d[key]
+            else:
+                return None
+        return d
+    
     async def handle_message(self, update: dict, message: Message, bot: User):
         for h in self.message_handlers:
-            if not h[1]:
+            if not h[1]:  # No filters, execute handler
                 await h[0](update, message, bot)
                 logging.info(f'Update {update["update_id"]} handled by {h[0].__name__} without filters')
                 return
@@ -36,14 +45,9 @@ class Dispatcher(Parent):
                 dispatch = True
                 logging.debug(f'Checking filters {h[1]} for update {update["update_id"]}')
                 for k, v in h[1].items():
-                    if '.' in k:
-                        inner_k = k.split('.')
-                        if inner_k[0] in update['message']:
-                            if update['message'][inner_k[0]].get(inner_k[1]) != v:
-                                dispatch = False
-                                break
-                    if k in update['message'] and update['message'][k] != v:
-                        logging.warning(f'Update {update["update_id"]} not handled, because {k} != {v}')
+                    keys = k.split('.')  # Split key for nested access
+                    value = self.get_nested_value(update['message'], keys)
+                    if value != v:  # Filter fails if value doesn't match
                         dispatch = False
                         break
                 if dispatch:
