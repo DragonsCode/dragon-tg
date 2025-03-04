@@ -25,7 +25,7 @@ class Bot(Parent):
     async def get_me(self) -> User:
         res = await get_me(self.token)
         if res[0]:
-            logging.info("Successfully fetched bot information.")
+            logging.debug("Successfully fetched bot information.")
             return User.from_kwargs(**res[1])
         else:
             logging.error(f"Error {res[1][0]}: {res[1][1]}")
@@ -51,7 +51,7 @@ class Bot(Parent):
             return
         res['from_user'] = res['from']
         del res['from']
-        logging.info(f"Message sent to chat {chat_id}: {text}")
+        logging.debug(f"Message sent to chat {chat_id}: {text}")
         return Message.from_kwargs(**res)
 
     async def long_polling(self, skip_updates: bool = False) -> None:
