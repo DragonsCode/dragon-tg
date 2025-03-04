@@ -1,4 +1,4 @@
-from setuptools import setup
+from setuptools import setup, find_packages
 
 setup(
     name='dragontg',
@@ -8,6 +8,6 @@ setup(
     author='Murodov Dilmurod',
     author_email='dilmurodmurodov978@gmail.com',
     license='MIT',
-    packages=['dragontg'],
+    packages=find_packages(include=["dragontg", "dragontg.*"]),  # Автоматически находит подмодули
     zip_safe=False
 )
