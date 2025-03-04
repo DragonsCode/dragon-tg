@@ -2,7 +2,7 @@ from dragontg.models.chat import Chat
 from dragontg.models.user import User
 from dragontg.models.parent import Parent
 
-from dragontg.methods.parent import Request
+from dragontg.methods.send_message import send_message
 
 from dataclasses import dataclass, field
 
@@ -31,13 +31,8 @@ class Message(Parent):
         self._from_user = User.from_kwargs(**val)
     
     async def reply(self, token: str, text: str):
-        reply_parameters = {"chat_id": self.chat.id, "message_id": self.message_id}
-        request = Request('/sendMessage', token, data=dict(chat_id=self.chat.id, text=text, reply_parameters=reply_parameters))
-        response = await request.post_response()
-        if response.ok:
-            return True, response.result
-        else:
-            return False, response.description
+        result = await send_message(token, self.chat.id, text, self.message_id)
+        return result
 
     def __repr__(self):
         return f"Message(message_id={self.message_id}, date={self.date}, text={self.text}, from_user={self.from_user}, chat={self.chat})"

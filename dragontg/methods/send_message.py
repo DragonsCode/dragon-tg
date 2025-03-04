@@ -20,7 +20,7 @@ async def send_message(token: str, chat_id: int, text: str, reply_to_message_id:
 
     if response.ok:
         logging.debug(f'Message sent to chat {chat_id}: {text}')
-        return response.result
+        return True, response.result
     else:
         logging.error(f'Failed to send message: {response.error_code} - {response.description}')
-        return False
+        return False, response.description
