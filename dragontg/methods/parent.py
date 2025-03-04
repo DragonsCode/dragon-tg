@@ -39,20 +39,27 @@ class Response:
         return self.request_json['error_code']
 
 class Request:
-    def __init__(self, method: str, token: str, headers: dict = None, timeout: int = 60, data: dict = None):
+    def __init__(self, method: str, token: str, headers: dict = None, timeout: int = 60, data: dict = None, json: dict = None):
         self.data = data
+        self.json = json
         self.headers = headers
         self.method = method
         self.timeout = timeout
-        self.url = 'https://api.telegram.org/bot'+token
+        self.url = 'https://api.telegram.org/bot' + token
     
     async def get_response(self):
         async with aiohttp.ClientSession() as session:
             while True:
                 try:
-                    async with session.get(self.url+self.method, data=self.data, headers=self.headers, timeout=self.timeout) as response:
+                    async with session.get(
+                        self.url + self.method,
+                        data=self.data,
+                        json=self.json,
+                        headers=self.headers,
+                        timeout=self.timeout
+                    ) as response:
                         j = await response.json()
-                        logging.debug(f'GET {self.url+self.method} - Status: {response.status}')
+                        logging.debug(f'GET {self.url + self.method} - Status: {response.status}')
                         return Response(response, j)
                 except asyncio.TimeoutError:
                     logging.warning("Timeout error, retrying in 3 seconds...")
@@ -62,9 +69,15 @@ class Request:
         async with aiohttp.ClientSession() as session:
             while True:
                 try:
-                    async with session.post(self.url+self.method, data=self.data, headers=self.headers, timeout=self.timeout) as response:
+                    async with session.post(
+                        self.url + self.method,
+                        data=self.data,
+                        json=self.json,
+                        headers=self.headers,
+                        timeout=self.timeout
+                    ) as response:
                         j = await response.json()
-                        logging.debug(f'POST {self.url+self.method} - Status: {response.status}')
+                        logging.debug(f'POST {self.url + self.method} - Status: {response.status}')
                         return Response(response, j)
                 except asyncio.TimeoutError:
                     logging.warning("Timeout error, retrying in 3 seconds...")

@@ -15,7 +15,7 @@ async def send_message(token: str, chat_id: int, text: str, reply_to_message_id:
     else:
         data = dict(chat_id=chat_id, text=text)
 
-    request = Request('/sendMessage', token, data=data)
+    request = Request('/sendMessage', token, json=data)
     response = await request.post_response()
 
     if response.ok:
