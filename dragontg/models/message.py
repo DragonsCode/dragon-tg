@@ -33,11 +33,11 @@ class Message(Parent):
     async def reply(self, token: str, text: str):
         reply_parameters = {"chat_id": self.chat.id, "message_id": self.message_id}
         request = Request('/sendMessage', token, data=dict(chat_id=self.chat.id, text=text, reply_parameters=reply_parameters))
-        response = await request.get_response()
+        response = await request.post_response()
         if response.ok:
-            return True
+            return True, response.result
         else:
-            return False
+            return False, response.description
 
     def __repr__(self):
         return f"Message(message_id={self.message_id}, date={self.date}, text={self.text}, from_user={self.from_user}, chat={self.chat})"
