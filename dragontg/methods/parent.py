@@ -1,5 +1,12 @@
 import aiohttp
 import asyncio
+import logging
+
+# Logging setup
+logging.basicConfig(
+    format='%(asctime)s - %(levelname)s - %(filename)s - %(message)s',
+    level=logging.DEBUG
+)
 
 class Response:
     def __init__(self, request, request_json):
@@ -8,7 +15,7 @@ class Response:
         self.text = request.text
         self.request_json = request_json
         self.headers = request.headers
-    
+        
     @property
     def ok(self):
         return self.request_json['ok']
@@ -45,9 +52,10 @@ class Request:
                 try:
                     async with session.get(self.url+self.method, data=self.data, headers=self.headers, timeout=self.timeout) as response:
                         j = await response.json()
+                        logging.debug(f'GET {self.url+self.method} - Status: {response.status}')
                         return Response(response, j)
                 except asyncio.TimeoutError:
-                    print("Timeout error, retrying in 3 seconds...")
+                    logging.warning("Timeout error, retrying in 3 seconds...")
                     await asyncio.sleep(3)
     
     async def post_response(self):
@@ -56,7 +64,8 @@ class Request:
                 try:
                     async with session.post(self.url+self.method, data=self.data, headers=self.headers, timeout=self.timeout) as response:
                         j = await response.json()
+                        logging.debug(f'POST {self.url+self.method} - Status: {response.status}')
                         return Response(response, j)
                 except asyncio.TimeoutError:
-                    print("Timeout error, retrying in 3 seconds...")
+                    logging.warning("Timeout error, retrying in 3 seconds...")
                     await asyncio.sleep(3)

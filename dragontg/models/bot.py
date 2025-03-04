@@ -1,13 +1,19 @@
+import logging
 from dataclasses import dataclass
 from dragontg.models.parent import Parent
 from .user import User
 from .message import Message
 
 from ..handlers.dispatcher import Dispatcher
-
 from ..methods.parent import Request, Response
 from ..methods.get_me import get_me
 from ..methods.send_message import send_message
+
+# Logging setup
+logging.basicConfig(
+    format="%(asctime)s - %(levelname)s - %(filename)s - %(message)s",
+    level=logging.DEBUG
+)
 
 @dataclass
 class Bot(Parent):
@@ -19,9 +25,10 @@ class Bot(Parent):
     async def get_me(self) -> User:
         res = await get_me(self.token)
         if res[0]:
+            logging.info("Successfully fetched bot information.")
             return User.from_kwargs(**res[1])
         else:
-            print(f"Error {res[1][0]}: {res[1][1]}")
+            logging.error(f"Error {res[1][0]}: {res[1][1]}")
     
     async def get_updates(self, offset: int, timeout: int) -> list[dict]:
         dt = dict(offset=offset, timeout=timeout)
@@ -29,31 +36,38 @@ class Bot(Parent):
             response = await Request('/getUpdates', self.token, data=dt).post_response()
             j = response.result
         except ValueError:  # incomplete data
+            logging.warning("Received incomplete data while fetching updates.")
             return
         if not response.ok or not j:
+            logging.info("No new updates received.")
             return
+        logging.debug(f"Received {len(j)} updates.")
         return j
     
     async def send_message(self, chat_id: int, text: str, reply_to_message_id: int = None):
         res = await send_message(self.token, chat_id, text, reply_to_message_id)
         if not res:
+            logging.error(f"Failed to send message to chat {chat_id}")
             return
         res['from_user'] = res['from']
         del res['from']
+        logging.info(f"Message sent to chat {chat_id}: {text}")
         return Message.from_kwargs(**res)
 
     async def long_polling(self, skip_updates: bool = False) -> None:
         bot = await self.get_me()
-        print(f"Starting long polling for @{bot.username}...")
+        logging.info(f"Starting long polling for @{bot.username}...")
+
         if skip_updates:
-            print("Skipping updates...")
+            logging.info("Skipping updates...")
             res = await self.get_updates(self.offset, self.timeout)
             if not res:
-                print("No updates to skip!")
+                logging.info("No updates to skip!")
             else:
                 self.offset = res[-1]['update_id'] + 1
-                print(f"Skipping updates until {self.offset}...")
-                print(f"{len(res)} updates skipped, {self.offset} left!")
+                logging.info(f"Skipping updates until {self.offset}...")
+                logging.info(f"{len(res)} updates skipped, {self.offset} left!")
+
         while True:
             j = await self.get_updates(self.offset, self.timeout)
             if not j:
@@ -66,3 +80,4 @@ class Bot(Parent):
                 if m.text:
                     await self.dispatcher.handle_message(r, m, bot)
                 self.offset = r['update_id'] + 1
+                logging.debug(f"Update {r['update_id']} processed.")
