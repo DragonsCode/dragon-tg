@@ -9,6 +9,7 @@ from ..methods.parent import Request, Response
 from ..methods.get_me import get_me
 from ..methods.send_message import send_message
 
+@dataclass
 class Bot(Parent):
     token: str
     dispatcher: Dispatcher

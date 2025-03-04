@@ -8,6 +8,9 @@ setup(
     author='Murodov Dilmurod',
     author_email='dilmurodmurodov978@gmail.com',
     license='MIT',
-    packages=find_packages(include=["dragontg", "dragontg.*"]),  # Автоматически находит подмодули
+    packages=find_packages(include=["dragontg", "dragontg.*"]),  # Autodiscover packages
+    install_requires=[
+        "aiohttp>=3.11.13",  # Library for asynchronous HTTP requests
+    ],
     zip_safe=False
 )
