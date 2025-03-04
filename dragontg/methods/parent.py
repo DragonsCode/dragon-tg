@@ -3,10 +3,10 @@ import asyncio
 import logging
 
 # Logging setup
-logging.basicConfig(
-    format='%(asctime)s - %(levelname)s - %(filename)s - %(message)s',
-    level=logging.DEBUG
-)
+# logging.basicConfig(
+#     format='%(asctime)s - %(levelname)s - %(filename)s - %(message)s',
+#     level=logging.DEBUG
+# )
 
 class Response:
     def __init__(self, request, request_json):

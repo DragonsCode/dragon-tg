@@ -2,10 +2,10 @@ import logging
 from .parent import Request, Response
 
 # Logging setup
-logging.basicConfig(
-    format='%(asctime)s - %(levelname)s - %(filename)s - %(message)s',
-    level=logging.DEBUG
-)
+# logging.basicConfig(
+#     format='%(asctime)s - %(levelname)s - %(filename)s - %(message)s',
+#     level=logging.DEBUG
+# )
 
 async def send_message(token: str, chat_id: int, text: str, reply_to_message_id: int = None):
     reply_parameters = None

@@ -10,10 +10,10 @@ from ..methods.get_me import get_me
 from ..methods.send_message import send_message
 
 # Logging setup
-logging.basicConfig(
-    format="%(asctime)s - %(levelname)s - %(filename)s - %(message)s",
-    level=logging.DEBUG
-)
+# logging.basicConfig(
+#     format="%(asctime)s - %(levelname)s - %(filename)s - %(message)s",
+#     level=logging.DEBUG
+# )
 
 @dataclass
 class Bot(Parent):
