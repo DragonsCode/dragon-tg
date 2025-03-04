@@ -1,3 +1,4 @@
+from __future__ import annotations
 from dragontg.models.chat import Chat
 from dragontg.models.user import User
 from dragontg.models.parent import Parent
