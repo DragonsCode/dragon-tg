@@ -75,6 +75,7 @@ class Bot(Parent):
             for r in j:
                 from_user = r['message']['from']
                 r['message']['from_user'] = from_user
+                r['message']['bot'] = self
                 del r['message']['from']
                 m = Message.from_kwargs(**r['message'])
                 if m.text:

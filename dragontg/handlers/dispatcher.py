@@ -35,10 +35,10 @@ class Dispatcher(Parent):
                 return None
         return d
     
-    async def handle_message(self, update: dict, message: Message, bot: User):
+    async def handle_message(self, update: dict, message: Message, bot: User = None):
         for h in self.message_handlers:
             if not h[1]:  # No filters, execute handler
-                await h[0](update, message, bot)
+                await h[0](update, message)
                 logging.info(f'Update {update["update_id"]} handled by {h[0].__name__} without filters')
                 return
             else:
@@ -51,7 +51,7 @@ class Dispatcher(Parent):
                         dispatch = False
                         break
                 if dispatch:
-                    await h[0](update, message, bot)
+                    await h[0](update, message)
                     logging.info(f'Update {update["update_id"]} handled by {h[0].__name__}')
                     return
         logging.warning(f'Update {update["update_id"]} not handled by any handler')
